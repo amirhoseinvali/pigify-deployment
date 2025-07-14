@@ -1,0 +1,77 @@
+version: "3"
+services:
+  backend:
+    container_name: backend
+    # build: ../backend
+    image: backend:latest
+
+    volumes:
+      - ./app/:/usr/src/app/
+      - static_volume:/vol/static
+      - media_volume:/vol/media
+    ports:
+      - 8000:8000
+    env_file:
+      - .env
+    depends_on:
+      - db
+    networks:
+      - main  
+
+  # db:
+  #   image: postgres
+  #   container_name: postgres
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data/
+  #   environment:
+  #     - POSTGRES_USER=postgres
+  #     - POSTGRES_PASSWORD=123
+  #     - POSTGRES_DB=PigifyDB
+  #   networks:
+  #     - main
+
+  db:
+    image: postgres:15
+    container_name: postgres
+    environment:
+      POSTGRES_DB: PigifyDB
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - main
+
+  nginx:
+    image: nginx:latest
+    command: nginx -g 'daemon off;'
+    restart: on-failure
+    container_name: nginx
+    depends_on:
+      - backend
+    environment:
+      - TZ="Asia/Tehran"
+    volumes:
+      - ./nginx/proxy_settings.conf:/etc/nginx/proxy_settings.conf:ro
+      - ./nginx/nginx.ssl.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/private.crt:/etc/nginx/ssl/private.crt
+      - ./nginx/private.key:/etc/nginx/ssl/private.key
+      - static_volume:/vol/static
+      - media_volume:/vol/media
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - main
+
+
+networks:
+  main:
+  
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:
+  db-data:
