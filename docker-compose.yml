@@ -6,7 +6,7 @@ services:
     # image: backend:latest
 
     volumes:
-      - ./app/:/usr/src/app/
+      - ../pigify-backend:/app
       - static_volume:/vol/static
       - media_volume:/vol/media
     ports:
