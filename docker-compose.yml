@@ -2,8 +2,8 @@ version: "3"
 services:
   backend:
     container_name: backend
-    # build: ../backend
-    image: backend:latest
+    build: ../pigify-backend
+    # image: backend:latest
 
     volumes:
       - ./app/:/usr/src/app/
@@ -17,18 +17,6 @@ services:
       - db
     networks:
       - main  
-
-  # db:
-  #   image: postgres
-  #   container_name: postgres
-  #   volumes:
-  #     - postgres_data:/var/lib/postgresql/data/
-  #   environment:
-  #     - POSTGRES_USER=postgres
-  #     - POSTGRES_PASSWORD=123
-  #     - POSTGRES_DB=PigifyDB
-  #   networks:
-  #     - main
 
   db:
     image: postgres:15
