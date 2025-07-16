@@ -54,6 +54,42 @@ services:
     networks:
       - main
 
+  redis:
+    image: redis:7
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+      - main
+
+  celery:
+    build: ../pigify-backend
+    container_name: celery
+    command: celery -A pigify worker --loglevel=info
+    volumes:
+      - ../pigify-backend:/app
+    depends_on:
+      - backend
+      - redis
+    env_file:
+      - .env
+    networks:
+      - main
+
+  celery-beat:
+    build: ../pigify-backend
+    container_name: celery-beat
+    command: celery -A pigify beat --loglevel=info
+    volumes:
+      - ../pigify-backend:/app
+    depends_on:
+      - backend
+      - redis
+    env_file:
+      - .env
+    networks:
+      - main
 
 networks:
   main:
